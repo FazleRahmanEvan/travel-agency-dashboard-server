@@ -35,6 +35,7 @@ function verifyJWT(req, res, next) {
       }
       // console.log(decoded)
       req.decoded = decoded;
+
       next();
   });
 }
@@ -59,10 +60,11 @@ async function run(){
         const weightageCollection = client.db('travel_agency_dashboard').collection('weightage');
         const leedsCollection = client.db('travel_agency_dashboard').collection('leeds');
         const userCollection = client.db('travel_agency_dashboard').collection('user');
+        const attendenceCollection = client.db('travel_agency_dashboard').collection('attendence');
 
 
         
-        app.get('/user',verifyJWT,  async(req, res)=> {
+        app.get('/user',  async(req, res)=> {
           const users = await userCollection.find().toArray();
           res.send(users);
         })
@@ -361,7 +363,16 @@ async function run(){
          const result = await leedsCollection.find().toArray();
          res.send(result)
       })
+      
 
+      app.get('/leeds/:_id', async (req,res)=> {
+        const id = req.params._id;
+        console.log(id); 
+        const filter ={_id: ObjectId(id)}
+        const result = await leedsCollection.findOne(filter);
+        console.log(result);
+        res.send(result);        
+      })
 
       
       app.delete('/leeds/:_id', async (req,res)=> {
@@ -371,6 +382,28 @@ async function run(){
         const result = await leedsCollection.deleteOne(filter);
         console.log(result);
         res.send(result);        
+      })
+
+      app.get("/attendence", async (req, res) => {
+        const list = await attendenceCollection.find().toArray();
+
+        res.send(list);
+      })
+      app.put('/attendence', async (req, res) => {
+
+        const body = req.body;
+        
+
+        const user = await attendenceCollection.updateOne({_id: ObjectId(body._id)}, {$set: { clockOut: body.clockOut}})
+        
+        res.send(user);
+      })
+
+      app.post('/attendence', async (req, res) => {
+        const body = req.body;
+        const user = await attendenceCollection.insertOne(body);
+
+        res.send(user);
       })
 
       
