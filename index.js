@@ -368,8 +368,8 @@ async function run(){
       app.get('/leeds/:_id', async (req,res)=> {
         const id = req.params._id;
         console.log(id); 
-        const filter ={_id: ObjectId(id)}
-        const result = await leedsCollection.findOne(filter);
+        const query ={_id: ObjectId(id)}
+        const result = await leedsCollection.findOne(query);
         console.log(result);
         res.send(result);        
       })
